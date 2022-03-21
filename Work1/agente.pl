@@ -1,66 +1,60 @@
-%-------------------------estados--------------------------
+%Temos um tabuleiro de 7x7
 
-estado_inicial((6, 1)).
+%estado_inicial(Estado)
+%representa a posição inicial do agente A
+estado_inicial(e(2,7)).
+%visitadas((2,7)).
 
-estado_final((0, 4)).
+%estado_final(Estado)
+%representa a saída S
+estado_final(e(5,1)).
 
-%((4, 5)).
-%estado_final((0, 0)).
+%casas bloqueadas com um X
+%bloqueada(Estado)
+bloqueada(e(1,2)).
+bloqueada(e(3,1)).
+bloqueada(e(3,2)).
 
-list_Xs([(0, 2), (1, 0), (1, 2), (1, 6), (3, 3), (4, 3), (5, 3)]).
-%list_Xs([ ]).
+bloqueada(e(4,4)).
+bloqueada(e(4,5)).
+bloqueada(e(4,6)).
 
-%-------------------------restriçoes--------------------------
-
-safe_position((X,Y)) :- list_Xs(L),
-						perimetro((X, Y)),
-						\+ member((X, Y), L).
-
-/*perimetro((X,Y)) :- X >= 0, X =< 6,
-                    Y >= 0, Y =< 6.*/
-
- perimetro((X,Y)) :- X >= 0, X =< 5,
-                    Y >= 0, Y =< 5.
-
-
-%-------------------------operações--------------------------
-
-%op(Estado_act, operador, Estado_seg, Custo)
-op((X, Y), esq, (X, Z),1) :- Z is Y-1,
-							 safe_position((X, Z)).
-            
-op((X, Y), dir, (X, Z),1) :-  Z is Y+1,
-							  safe_position((X, Z)).
-                                 
-op((X, Y), sobe, (Z, Y),1) :- Z is X-1,
-							  safe_position((Z, Y)). 
-                          
-op((X, Y), desce, (Z, Y),1) :-  Z is X+1,
-								safe_position((Z, Y)). 
+bloqueada(e(7,2)).
 
 
-%-------------------------heuristicas--------------------------
+%representação dos operadores de estados
+%op(Estado_atual,Operador,Estado_seguinte,Custo)
 
-/*h((X,Y), Val):- estado_final((Xf, Yf)),
-				modDif(X, Xf, Vi),
-				modDif(Y, Yf, Vj),
-				Val is (Vi+Vj).*/
+op(e(X,Y),cima,e(X,Y1),1) :-
+    Y > 1,
+    Y1 is Y-1,
+    \+ bloqueada(e(X,Y1)).
 
-h((X,Y), Val):- estado_final((Xf, Yf)),
-				modDif(X, Xf, Vi),
-				modDif(Y, Yf, Vj),
-				max(V, Vi, Vj), Val is V.
+op(e(X,Y),direita,e(X1,Y), 1) :-
+   X < 7,
+   X1 is X+1,
+   \+ bloqueada(e(X1,Y)).
 
+op(e(X,Y),baixo,e(X,Y1),1) :-
+    Y < 7,
+    Y1 is Y+1,
+    \+ bloqueada(e(X,Y1)).
 
-%--------------------------AUXILIAR--------------------------
+op(e(X,Y),esquerda,e(X1,Y),1) :-
+    X > 1,
+    X1 is X-1,
+    \+ bloqueada(e(X1,Y)).
 
-modDif(I, J, D):- I > J,
-				  D is I-J.
+%Heuristica 1 - Distancia de manhattan
+/*h(e(Ix,Iy),SOMA):-
+	estado_final(e(Fx,Fy)),
+	Dx is abs(Ix - Fx), 
+ 	Dy is abs(Iy - Fy),
+	SOMA is Dx + Dy.*/
 
-modDif(I, J, D):- I =< J,
-				  D is J-I.
-
-
-max(Vi, Vi, Vj):- Vi > Vj, !.
-
-max(Vj, _, Vj).
+%Heuristica 2 - Distancia euclidiana
+h(e(Ix,Iy),SOMA):-
+	estado_final(e(Fx,Fy)),
+	Dx is abs(Ix - Fx), 
+ 	Dy is abs(Iy - Fy),
+	SOMA is round(sqrt(Dy ** 2 + Dx ** 2)).

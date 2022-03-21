@@ -1,95 +1,120 @@
-%-------------------------estados--------------------------
+%Temos um tabuleiro de 7x7
 
-estado_inicial(s(a(6, 1), c(5, 1))).
-
-estado_final(s(a(_, _), c(0, 4))).
-
-list_Xs([p(0, 2), p(1, 0), p(1, 2), p(1, 6), p(3, 3), p(4, 3), p(5, 3)]).
+%estado_inicial(Estado)
+%representa a posição inicial do agente A
 
 
-%-------------------------restriçoes--------------------------
+estado_inicial(p(2,7,2,6)).
 
-safe_position(a(X, Y)):- list_Xs(L),
-						 perimetro(p(X, Y)),
-						 \+member(p(X, Y), L).
+%estado_final(Estado)
+%representa a saída S
+estado_final(p(_,_,5,1)).
 
-safe_position(c(X, Y)):- list_Xs(L),
-						 perimetro(p(X, Y)),
-						 \+ member(p(X, Y), L).
+%casas bloqueadas com um X
+%bloqueada(Estado)
+bloqueada(p(1,2)).
+bloqueada(p(3,1)).
+bloqueada(p(3,2)).
 
+bloqueada(p(4,4)).
+bloqueada(p(4,5)).
+bloqueada(p(4,6)).
 
-perimetro(p(X, Y)) :- X >= 0, X =< 6,
-                      Y >= 0, Y =< 6.
+bloqueada(p(7,2)).
 
+%Limites do tabuleiro
+lim(X,Y) :- X=<7, X>=1, Y=<7,Y>=1.
 
-%-------------------------operações--------------------------
+%representação dos operadores de estados
+%op(Estado_atual,Operador,Estado_seguinte,Custo)
 
-%op(Estado_act,operador,Estado_seg,Custo)
-op(s(a(Xa, Ya), c(Xc, Yc)) ,emp_esq, s(a(Xa, Za), c(Xc, Zc)) ,1):- Za is Ya-1,
-																   Zc is Yc-1,
-																   (Xc, Yc) = (Xa, Za),
-																   safe_position(a(Xa, Za)),
-																   safe_position(c(Xc, Zc)).
+% Operação do agente seguir para cima
+op(p(X,Y,P,Q),cima,p(X,Y1,P,Q1),1) :-
 
-op(s(a(Xa, Ya), c(Xc, Yc)) ,move_esq, s(a(Xa, Za), c(Xc, Yc)) ,1):- Za is Ya-1,
-																	(Xc, Yc) \= (Xa, Za),
-																	safe_position(a(Xa, Za)). 
+    Y1 is Y-1,
 
+    (iguais(p(X,Y1),p(P,Q)) ->
+        (
+            Q1 is Q-1,
+            lim(P,Q1),
+            \+ bloqueada(p(P,Q1))
+        );
+        (
+            Q1 is Q,
+            lim(X,Y1),
+            \+ bloqueada(p(X,Y1))
+        )
+    ).
 
-op(s(a(Xa, Ya), c(Xc, Yc)), emp_dir, s(a(Xa, Za), c(Xc, Zc)), 1):- Za is Ya+1,
-																   Zc is Yc+1,
-																   (Xc, Yc) = (Xa, Za),
-																   safe_position(a(Xa, Za)),
-																   safe_position(c(Xc, Zc)).
+% Operação do agente seguir para a direita
+op(p(X,Y,P,Q),direita,p(X1,Y,P1,Q),1) :-
 
-op(s(a(Xa, Ya), c(Xc, Yc)), move_dir, s(a(Xa, Za), c(Xc, Yc)), 1):- Za is Ya+1,
-																    (Xc, Yc) \= (Xa, Za),
-																    safe_position(a(Xa, Za)). 
+    X1 is X+1,
 
+    (iguais(p(X1,Y),p(P,Q)) ->
+        (
+            P1 is P+1,
+            lim(P1,Q),
+            lim(X1,Y),
+            \+ bloqueada(p(P1,Q))
+        );
+        (
+            P1 is P,
+            lim(X1,Y),
+            \+ bloqueada(p(X1,Y))
+        )
+    ).
 
-op(s(a(Xa, Ya), c(Xc, Yc)), emp_sobe, s(a(Za, Ya), c(Zc, Yc)), 1):- Za is Xa-1,
-																	Zc is Xc-1,
-																	(Xc, Yc) = (Za, Ya),
-																	safe_position(a(Za, Ya)),
-																	safe_position(c(Zc, Yc)).
+% Operação do agente seguir para baixo
+op(p(X,Y,P,Q),baixo,p(X,Y1,P,Q1),1) :-
 
-op(s(a(Xa, Ya), c(Xc, Yc)), move_sobe, s(a(Za, Ya), c(Xc, Yc)), 1):- Za is Xa-1,                               
-																	 (Xc, Yc) \= (Za, Ya),
-																	 safe_position(c(Za, Ya)).
+    Y1 is Y+1,
 
+    (iguais(p(X,Y1),p(P,Q)) ->
+        (
+            Q1 is Q+1,
+            lim(P,Q1),
+            lim(X,Y1),
+            \+ bloqueada(p(P,Q1))
+        );
+        (
+            Q1 is Q,
+            lim(X,Y1),
+            \+ bloqueada(p(X,Y1))
+        )
+    ).
 
-op(s(a(Xa, Ya), c(Xc, Yc)), emp_desce, s(a(Za, Ya), c(Zc, Yc)), 1):- Za is Xa+1,
-																	 Zc is Xc+1,
-																	 (Xc, Yc) = (Za, Ya),
-																	 safe_position(a(Za, Ya)),
-																	 safe_position(c(Zc, Yc)).
+% Operação do agente seguir para a esquerda
+op(p(X,Y,P,Q),esquerda,p(X1,Y,P1,Q),1) :-
 
-op(s(a(Xa, Ya), c(Xc, Yc)), move_desce, s(a(Za, Ya), c(Xc, Yc)), 1):- Za is Xa+1,                               
-																	  (Xc, Yc) \= (Za, Ya),
-																	  safe_position(c(Za, Ya)).
+    X1 is X-1,
 
+    (iguais(p(X1,Y),p(P,Q)) ->
+        (
+            P1 is P-1,
+            lim(P1,Q),
+            lim(X1,Y),
+            \+ bloqueada(p(P1,Q))
+        );
+        (
+            P1 is P,
+            lim(X1,Y),
+            \+ bloqueada(p(X1,Y))
+        )
+    ).
 
-%-------------------------heuristicas--------------------------
+%Predicado que vai verificar se são iguais as posições do agente e da caixa
+iguais(P1,P1).
 
-h(s(a(_, _), c(X, Y)), Val):- estado_final(s(a(_, _), c(Xf, Yf))),
-				 			  modDif(X, Xf, Vi),
-				 			  modDif(Y, Yf, Vj),
-							  Val is (Vi+Vj).
+%Heuristica 1 - Distância de Manhattan
+h(p(_,_,Ix,Iy),SOMA):-
+	estado_final(p(_,_,Fx,Fy)),
+	Dx is abs(Ix - Fx), 
+ 	Dy is abs(Iy - Fy),
+	SOMA is Dx + Dy.
 
-/*h(s(a(_, _), c(X, Y)), Val):- estado_final(s(a(_, _), c(Xf, Yf))),
-				 			  modDif(X, Xf, Vi),
-				 			  modDif(Y, Yf, Vj),
-				 			  max(V, Vi, Vj),
-				 			  Val is V.*/
-
-
-%--------------------------AUXILIAR--------------------------
-
-modDif(I, J, D):- I > J, D is I-J.
-
-modDif(I, J, D):- I =< J, D is J-I.
-
-
-max(Vi, Vi, Vj):- Vi > Vj, !.
-
-max(Vj, _, Vj).
+%Heuristica 2 - Distancia euclidiana
+/*h(p(_,_,Ix,_),SOMA):-
+	estado_final(p(_,_,Fx,_)),
+	Dx is abs(Ix - Fx), 
+	SOMA is Dx.*/
