@@ -93,6 +93,7 @@ insere_fim([],L,L).
 insere_fim(L,[],L).
 insere_fim(R,[A|S],[A|L]):- insere_fim(R,S,L).
 
+%Funções para escrever
 escreve_seq_solucao(no(E,Pai,Op,Custo,Prof)):- 
   write(custo(Custo)),nl,
   write(profundidade(Prof)),nl,

@@ -1,4 +1,4 @@
-%Temos um tabuleiro de 7x7
+%Tabuleiro 7x7
 
 %estado_inicial(Estado)
 %representa a posição inicial do agente A
