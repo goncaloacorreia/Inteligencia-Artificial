@@ -1,4 +1,4 @@
-p:- consult(sudoku1),
+p:- consult(sudoku),
     estado_inicial(E0), 
     back(E0,A), 
     esc(A).
