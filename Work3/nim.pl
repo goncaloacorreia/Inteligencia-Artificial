@@ -1,4 +1,4 @@
-estado_inicial(e(1, 2, 2, 5)).
+estado_inicial(e(1, 2, 5, 7)).
 
 maximo(7).
 

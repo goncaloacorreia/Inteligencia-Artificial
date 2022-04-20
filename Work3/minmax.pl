@@ -15,9 +15,8 @@ g(Jogo):- [Jogo],
 		  estado_inicial(Ei),
 		  agente_nim(Ei).
 
-
 agente_nim(Ei):- terminal(Ei),
-				 write('pc ganhou').
+				 write('PC ganhou').
 
 agente_nim(Ei):- minimax_decidir(Ei, Op, Ess),
 				 write(Op),
@@ -27,7 +26,7 @@ agente_nim(Ei):- minimax_decidir(Ei, Op, Ess),
 				 jogador(Ess).
 
 jogador(Op):- terminal(Op),
-			  write('jogador ganhou').
+			  write('Jogador ganhou').
 
 jogador(Op):- read(X),
 			  read(Y),
@@ -36,6 +35,27 @@ jogador(Op):- read(X),
 			  nl,
 			  agente_nim(Final).
 
+
+agente_amazona(Ei):- terminal(Ei),
+					nl,
+					write('Jogador ganhou').
+
+agente_amazona(Ei):- minimax_decidir(Ei, Op, Ess),
+					write(Ess),
+					nl,
+					write(Op),
+					nl,
+					jogador1(Ess).
+jogador1(E):- terminal(E),
+			 write('PC ganhou').
+jogador1(E):- read(X),
+			 read(Y),
+			 read(A),
+			 read(B),
+			 op1(E, a(move(X, Y), Final)),
+			 asserta(bloqueado((A, B))),
+			 write(Final),
+			 agente_amazon(Final).
 
 minimax_decidir(Ei, terminou, Ei):- terminal(Ei).
 
