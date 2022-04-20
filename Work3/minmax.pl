@@ -1,4 +1,4 @@
-%melhor move
+%melhor jogada
 
 /*g(Jogo):- [Jogo],
 		  estado_inicial(Ei),
