@@ -31,7 +31,7 @@ accao(afetar_r(R1, R2), [val(R1, X), val(R2, Y)], [val(R1, Y)], [val(R1, X)] ) :
                                                                             member(X, [va, vb, vc, vd, ve]),
                                                                             member(Y, [va, vb, vc, vd, ve]).
                                                                             
-
+%alterar ! ! !
 accao(somar_r(R1, R2, R3), [val(R1, X), val(R2, Y), val(R3, Z)], [soma(R1, Y, Z)], [val(R1, X)]) :- member(R1, [a, b, c, d, e]),
                                                                                                     member(R2, [a, b, c, d, e]),
                                                                                                     member(R3, [a, b, c, d, e]),
