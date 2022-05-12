@@ -8,7 +8,7 @@ estado_inicial([
         ]).
 
 %alterar consoante o estado final pretendido
-estado_final(F):- estado1(F).
+estado_final(F):- estado2_1(F).
 
 estado1([
             val(a, vb),
